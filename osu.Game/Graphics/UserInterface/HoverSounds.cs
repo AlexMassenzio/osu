@@ -9,6 +9,7 @@ using osu.Framework.Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Input.Events;
+using osu.Framework.Timing;
 
 namespace osu.Game.Graphics.UserInterface
 {
@@ -22,15 +23,25 @@ namespace osu.Game.Graphics.UserInterface
 
         protected readonly HoverSampleSet SampleSet;
 
+        private IAdjustableClock debounceClock;
+        private readonly double debounceRate;
+
         public HoverSounds(HoverSampleSet sampleSet = HoverSampleSet.Normal)
         {
             SampleSet = sampleSet;
             RelativeSizeAxes = Axes.Both;
+            debounceClock = new StopwatchClock();
+            debounceClock.Start();
+            debounceRate = 100d;
         }
 
         protected override bool OnHover(HoverEvent e)
         {
-            sampleHover?.Play();
+            if (debounceClock.CurrentTime > debounceRate)
+            {
+                debounceClock.Seek(0d);
+                sampleHover?.Play();
+            }
             return base.OnHover(e);
         }
 
