@@ -23,8 +23,11 @@ namespace osu.Game.Graphics.UserInterface
 
         protected readonly HoverSampleSet SampleSet;
 
+        /// <summary>
+        /// Prevents sample from playing on every frame while scrolling.
+        /// </summary>
         private IAdjustableClock debounceClock;
-        private readonly double debounceRate;
+        private readonly double debounceDuration;
 
         public HoverSounds(HoverSampleSet sampleSet = HoverSampleSet.Normal)
         {
@@ -32,12 +35,12 @@ namespace osu.Game.Graphics.UserInterface
             RelativeSizeAxes = Axes.Both;
             debounceClock = new StopwatchClock();
             debounceClock.Start();
-            debounceRate = 100d;
+            debounceDuration = 100d;
         }
 
         protected override bool OnHover(HoverEvent e)
         {
-            if (debounceClock.CurrentTime > debounceRate)
+            if (debounceClock.CurrentTime > debounceDuration)
             {
                 debounceClock.Seek(0d);
                 sampleHover?.Play();
